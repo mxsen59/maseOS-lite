@@ -19,7 +19,11 @@ clear:
 	int 	10h
 	mov 	si, header
 	call 	print_string
+	mov 	si, title_header
+	call 	print_string
 	mov 	si, title
+	call 	print_string
+	mov 	si, title_footer
 	call 	print_string
  
 _start:
@@ -43,17 +47,9 @@ _start:
 	call 	strcmp
 	jc 		.reboot
 	mov 	si, buffer
-	mov 	di, cmd_install  
-	call 	strcmp
-	jc 		.install
-	mov 	si, buffer
 	mov 	di, cmd_clear  
 	call 	strcmp
 	jc 		.clear
-	mov 	si, buffer
-	mov 	di, cmd_newfile  
-	call 	strcmp
-	jc 		.new_file
 	mov 	si, badcommand
 	call 	print_string 
 	jmp 	_start 
@@ -77,46 +73,14 @@ _start:
 	mov 	ax, 0000
 	mov 	[0472], ax
 	jmp 	0xffff:000
-
-.install:
-	
-	.install_kernel:
-		mov 	bx, 0x1000
-		mov 	es, bx
-		mov 	dh, 0x00
-		mov 	dl, 0x80
-		mov 	ch, 0x00
-		mov 	cl, 0x03
-		mov 	ah, 0x03
-    	mov 	al, 0x01
-		int 	0x13
-		cmp 	ah, 0x00
-		je 		.install_error
-		mov 	ah, 0x0e
-		mov 	al, "!"
-		mov 	bx, 0
-		int 	0x10
-		jmp 	.reboot
-
-		.install_error:
-			mov 	si, msg_error
-			call	print_string
-			jmp		_start
 	
 .clear:
-  	jmp 	clear
+  	jmp 	clear 
 
-.new_file:
-	mov 	si, msg_newfile
-	call 	print_string
-	mov 	di, buffer
-	call 	get_string
-	mov 	si, buffer
-	cmp 	byte [si], 0
-	jmp 	_start
-
-header db "Kernel loaded v0.0.1", 0x0a, 0x0d, 0
-title db 'maseOS', 13, 10, 0x0a, 0x0d, 0
+header db "Kernel loaded v0.0.1", 13, 10, 0x0a, 0x0d, 0
+title_header db "================", 0x0a, 0x0d, 0
+title db '|+++ maseOS +++|', 0x0a, 0x0d, 0
+title_footer db "================", 13, 10, 0x0a, 0x0d, 0
 
 badcommand db 'Invalid command.', 0x0a, 0x0d, 0
 prompt db '>> ', 0
@@ -124,12 +88,9 @@ cmd_help db 'help', 0
 cmd_shutdown db "shutdown", 0
 cmd_clear db "clear", 0
 cmd_reboot db "reboot", 0
-cmd_install db "install", 0
-cmd_newfile db "nf", 0
-msg_newfile db "Filename: ", 0
-msg_error db "ERROR", 13, 10, 0
-msg_help db 'Commands: help, clear, reboot, shutdown, install, nf', 0x0a, 0x0d, 0
-buffer: times 2 db 0
+cmd_gtest db "gtest", 0
+msg_help db 'Commands: help, clear, reboot, shutdown', 0x0a, 0x0d, 0
+buffer times 64 db 0
 
 print_string:
 	lodsb        
@@ -206,5 +167,5 @@ strcmp:
 	stc  
 	ret
 
-  times 512-($-$$) db 0
-  dw 0xaa55
+times 1024-($-$$) db 0 
+dw 0xaa55
