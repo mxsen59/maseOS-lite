@@ -8,4 +8,4 @@ To run the kernel in a vm run 'make run'.
 
 ### Currently a work in progress :)
 
-![maseOS-lite_screenshot](https://user-images.githubusercontent.com/77242074/111912147-be491c80-8a3e-11eb-924f-d6505bfd95eb.png)
+![maseOS-lite_screenshot](https://user-images.githubusercontent.com/77242074/111912376-acb44480-8a3f-11eb-81d5-4931667c6129.png)
